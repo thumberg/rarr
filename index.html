@@ -19,8 +19,7 @@
         clientId: "facc7a46-3999-4051-8520-8fd97478d034",
         redirectURI: "https://thumberg.github.io/rarr/",
         scopeList: [
-          "user.display_name",
-          "user.bitmoji.avatar",
+          "user.display_name"
         ],
         handleResponseCallback: () => {
           snap.loginkit.fetchUserInfo().then(data => {
