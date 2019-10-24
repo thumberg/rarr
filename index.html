@@ -13,34 +13,10 @@
       </div>
     </div>
   </body>
-
-
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-    }
-
-    .hidden {
-        display: none;
-    }
-
-    #container {
-        left: 50%;
-        position: absolute;
-        top: 50%;
-        transform: translate(-50%, -50%);
-    }
-
-    #login-button button {
-        cursor: pointer;
-        font-family: Helvetica, Arial, sans-serif;
-    }
-</style>
   <script>
     window.snapKitInit = () => {
       snap.loginkit.mountButton("login-button", {
-        clientId: "12f74921-61f5-4326-99f6-9942eea61bb3",
+        clientId: "[12f74921-61f5-4326-99f6-9942eea61bb3]",
         redirectURI: "https://thumberg.github.io/rarr/",
         scopeList: [
           "user.display_name",
@@ -58,7 +34,7 @@
       })
     }
 
-    
+    // Load the SDK asynchronously
     (function (d, s, id) {
       var js, sjs = d.getElementsByTagName(s)[0];
       if (d.getElementById(id)) return;
