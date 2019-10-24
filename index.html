@@ -1,45 +1,12 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <link rel="stylesheet" href="style.css" />
-    <title>Snapchat Login Demo</title>
-  </head>
-  <body>
-    <div id="container">
-      <div id="login-button"></div>
-      <div id="profile" class="hidden">
-        <img id="picture" src="#" />
-        <p id="welcome">Welcome!</p>
-      </div>
-    </div>
-  </body>
-  <script>
-    window.snapKitInit = () => {
-      snap.loginkit.mountButton("login-button", {
-        clientId: "facc7a46-3999-4051-8520-8fd97478d034",
-        redirectURI: "https://thumberg.github.io/rarr/",
-        scopeList: [
-          "user.display_name"
-        ],
-        handleResponseCallback: () => {
-          snap.loginkit.fetchUserInfo().then(data => {
-            document.getElementById("login-button").classList.add("hidden")
-            document.getElementById("profile").classList.remove("hidden")
 
-            document.getElementById("picture").src = data["data"]["me"]["bitmoji"]["avatar"]
-            document.getElementById("welcome").innerHTML = "Welcome, " + data["data"]["me"]["displayName"] + "!"
-          })
-        },
-      })
-    }
+	OAuth.initialize('cka5WgWwWX3Sv_zqo071oKtakIVU0aHZbrwoc32KH60');
+  OAuth.popup('snapchat').then(snapchat => {
+    console.log('snapchat:', snapchat);
 
-    // Load the SDK asynchronously
-    (function (d, s, id) {
-      var js, sjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = "https://sdk.snapkit.com/js/v1/login.js";
-      sjs.parentNode.insertBefore(js, sjs);
-    }(document, "script", "loginkit-sdk"));
-  </script>
-</html>
+    snapchat.get('https://kit.snapchat.com/v1/me?query=%7Bme%7BdisplayName%2C%20externalId%2C%20bitmoji%7Bavatar%7D%7D%7D').then(data => {
+      alert('me data:', data);
+      alert("View browser Console Log for more details");
+	  }).then(error =>{
+    	console.log(error);
+    });
+	});
