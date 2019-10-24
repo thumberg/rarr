@@ -1,20 +1,70 @@
-* {
-  margin: 0;
-  padding: 0;
-}
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="style.css" />
+    <title>Snapchat Login Demo</title>
+  </head>
+  <body>
+    <div id="container">
+      <div id="login-button"></div>
+      <div id="profile" class="hidden">
+        <img id="picture" src="#" />
+        <p id="welcome">Welcome!</p>
+      </div>
+    </div>
+  </body>
 
-.hidden {
-  display: none;
-}
 
-#container {
-  left: 50%;
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
 
-#login-button button {
-  cursor: pointer;
-  font-family: Helvetica, Arial, sans-serif;
-}
+    .hidden {
+        display: none;
+    }
+
+    #container {
+        left: 50%;
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    #login-button button {
+        cursor: pointer;
+        font-family: Helvetica, Arial, sans-serif;
+    }
+</style>
+  <script>
+    window.snapKitInit = () => {
+      snap.loginkit.mountButton("login-button", {
+        clientId: "12f74921-61f5-4326-99f6-9942eea61bb3",
+        redirectURI: "https://thumberg.github.io/rarr/",
+        scopeList: [
+          "user.display_name",
+          "user.bitmoji.avatar",
+        ],
+        handleResponseCallback: () => {
+          snap.loginkit.fetchUserInfo().then(data => {
+            document.getElementById("login-button").classList.add("hidden")
+            document.getElementById("profile").classList.remove("hidden")
+
+            document.getElementById("picture").src = data["data"]["me"]["bitmoji"]["avatar"]
+            document.getElementById("welcome").innerHTML = "Welcome, " + data["data"]["me"]["displayName"] + "!"
+          })
+        },
+      })
+    }
+
+    // Load the SDK asynchronously
+    (function (d, s, id) {
+      var js, sjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) return;
+      js = d.createElement(s); js.id = id;
+      js.src = "https://sdk.snapkit.com/js/v1/login.js";
+      sjs.parentNode.insertBefore(js, sjs);
+    }(document, "script", "loginkit-sdk"));
+  </script>
+</html>
