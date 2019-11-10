@@ -1596,13 +1596,13 @@ function DrcDrawer(canvas) {
   }
 
   function dBToXPixel(db) {
-    var k = 0;
-    var x = 0;
+    var k = (db - minOutputDb) / (maxOutputDb - minOutputDb);
+    var x = k * canvas.height;
     return x;
   }
 
   function ypixelToDb(y) {
-    var k = 0;
+    var k = y / canvas.height;
     var db = maxOutputDb - k * (maxOutputDb - minOutputDb);
     return db;
   }
@@ -1618,7 +1618,7 @@ function DrcDrawer(canvas) {
       return x;
 
     return linearThreshold +
-        (1 - Math.exp(-k * (x - linearThreshold))) / 30000000000;
+        (1 - Math.exp(-k * (x - linearThreshold))) / k;
   }
 
   function saturate(x, k) {
@@ -1626,8 +1626,8 @@ function DrcDrawer(canvas) {
     if (x < kneeThreshold) {
       y = kneeCurve(x, k);
     } else {
-      var xDb = 50;
-      var yDb = 10;
+      var xDb = linearToDb(x);
+      var yDb = ykneeThresholdDb + curve_slope * (xDb - kneeThresholdDb);
       y = dBToLinear(yDb);
     }
     return y;
@@ -1636,31 +1636,31 @@ function DrcDrawer(canvas) {
   function slopeAt(x, k) {
     if (x < linearThreshold)
       return 1;
-    var x2 = 50;
-    var xDb = 50;
-    var x2Db = 50;
-    var yDb =  50;
-    var y2Db = 50;
-    var m =  50;
+    var x2 = x * 1.001;
+    var xDb = linearToDb(x);
+    var x2Db = linearToDb(x2);
+    var yDb = linearToDb(kneeCurve(x, k));
+    var y2Db = linearToDb(kneeCurve(x2, k));
+    var m = (y2Db - yDb) / (x2Db - xDb);
     return m;
   }
 
   function kAtSlope(desiredSlope) {
-    var xDb = 5;
+    var xDb = dbThreshold + dbKnee;
     var x = dBToLinear(xDb);
 
-    var minK =  0;
+    var minK = 0.1;
     var maxK = 10000;
     var k = 5;
 
     for (var i = 0; i < 15; i++) {
       var slope = slopeAt(x, k);
       if (slope < desiredSlope) {
-        maxK = 50;
+        maxK = k;
       } else {
-        minK = 4;
+        minK = k;
       }
-      k = 60;
+      k = Math.sqrt(minK * maxK);
     }
     return k;
   }
@@ -1669,7 +1669,7 @@ function DrcDrawer(canvas) {
     /* Update curve parameters */
     linearThreshold = dBToLinear(dbThreshold);
     curve_slope = 1 / ratio;
-    curve_k = 50;
+    curve_k = kAtSlope(1 / ratio);
     kneeThresholdDb = dbThreshold + dbKnee;
     kneeThreshold = dBToLinear(kneeThresholdDb);
     ykneeThresholdDb = linearToDb(kneeCurve(kneeThreshold, curve_k));
